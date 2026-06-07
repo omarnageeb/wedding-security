@@ -8,45 +8,22 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Tajawal', Arial, sans-serif;
-      text-align: center;
-      background: #0d0d1a;
-      color: white;
-      min-height: 100vh;
-      padding: 20px;
-    }
+    body { font-family: 'Tajawal', Arial, sans-serif; text-align: center; background: #0d0d1a; color: white; min-height: 100vh; padding: 20px; }
     .header { padding: 20px 0 10px; }
     .header h1 { font-size: 28px; font-weight: 900; color: #c8a951; }
     .header p { color: #888; font-size: 15px; margin-top: 5px; }
     .divider { width: 80px; height: 2px; background: linear-gradient(90deg, transparent, #c8a951, transparent); margin: 10px auto; }
-    #videoContainer {
-      position: relative; width: 290px; height: 290px;
-      margin: 15px auto; border-radius: 20px; overflow: hidden;
-      border: 2px solid #c8a951; box-shadow: 0 0 30px rgba(200,169,81,0.2);
-    }
+    #videoContainer { position: relative; width: 290px; height: 290px; margin: 15px auto; border-radius: 20px; overflow: hidden; border: 2px solid #c8a951; box-shadow: 0 0 30px rgba(200,169,81,0.2); }
     video { width: 100%; height: 100%; object-fit: cover; display: block; }
     .scan-corner { position: absolute; width: 30px; height: 30px; border-color: #c8a951; border-style: solid; }
     .tl { top:15px; left:15px; border-width:3px 0 0 3px; border-radius:5px 0 0 0; }
     .tr { top:15px; right:15px; border-width:3px 3px 0 0; border-radius:0 5px 0 0; }
     .bl { bottom:15px; left:15px; border-width:0 0 3px 3px; border-radius:0 0 0 5px; }
     .br { bottom:15px; right:15px; border-width:0 3px 3px 0; border-radius:0 0 5px 0; }
-    .scan-line {
-      position: absolute; left:15px; right:15px; height:2px;
-      background: linear-gradient(90deg, transparent, #c8a951, transparent);
-      animation: scanMove 2s linear infinite;
-    }
-    @keyframes scanMove {
-      0% { top:15px; opacity:1; }
-      90% { top:calc(100% - 15px); opacity:1; }
-      100% { top:calc(100% - 15px); opacity:0; }
-    }
+    .scan-line { position: absolute; left:15px; right:15px; height:2px; background: linear-gradient(90deg, transparent, #c8a951, transparent); animation: scanMove 2s linear infinite; }
+    @keyframes scanMove { 0% { top:15px; opacity:1; } 90% { top:calc(100% - 15px); opacity:1; } 100% { top:calc(100% - 15px); opacity:0; } }
     #status { color:#888; font-size:13px; margin-top:8px; min-height:20px; }
-    #resultOverlay {
-      display: none; position: fixed; inset: 0; z-index: 999;
-      flex-direction: column; align-items: center; justify-content: center;
-      padding: 30px; animation: fadeIn 0.3s ease;
-    }
+    #resultOverlay { display: none; position: fixed; inset: 0; z-index: 999; flex-direction: column; align-items: center; justify-content: center; padding: 30px; animation: fadeIn 0.3s ease; }
     @keyframes fadeIn { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:scale(1)} }
     .overlay-success { background: #061a06; }
     .overlay-error { background: #1a0606; }
@@ -57,19 +34,8 @@
     .result-time { font-size: 14px; color: #aaa; margin-top: 10px; }
     .border-success { border: 3px solid #00cc44; border-radius: 20px; padding: 40px 30px; width: 100%; max-width: 320px; background: rgba(0,204,68,0.05); }
     .border-error { border: 3px solid #cc0000; border-radius: 20px; padding: 40px 30px; width: 100%; max-width: 320px; background: rgba(204,0,0,0.05); }
-    .btn-scan {
-      background: linear-gradient(135deg,#c8a951,#a8891f);
-      color: #0d0d1a; border: none; padding: 15px 40px;
-      border-radius: 50px; font-size: 18px; font-weight: 900;
-      font-family: 'Tajawal', Arial, sans-serif;
-      cursor: pointer; margin-top: 25px;
-      box-shadow: 0 5px 20px rgba(200,169,81,0.3);
-    }
-    .loading-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(13,13,26,0.95); z-index: 998;
-      flex-direction: column; align-items: center; justify-content: center;
-    }
+    .btn-scan { background: linear-gradient(135deg,#c8a951,#a8891f); color: #0d0d1a; border: none; padding: 15px 40px; border-radius: 50px; font-size: 18px; font-weight: 900; font-family: 'Tajawal', Arial, sans-serif; cursor: pointer; margin-top: 25px; box-shadow: 0 5px 20px rgba(200,169,81,0.3); }
+    .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(13,13,26,0.95); z-index: 998; flex-direction: column; align-items: center; justify-content: center; }
     .loading-dots { display:flex; justify-content:center; gap:8px; }
     .loading-dots span { width:12px; height:12px; background:#c8a951; border-radius:50%; animation:bounce 0.8s infinite; }
     .loading-dots span:nth-child(2) { animation-delay:0.15s; }
@@ -83,9 +49,8 @@
   <div class="header">
     <h1>🔐 بوابة الأمن</h1>
     <div class="divider"></div>
-    <p>وجّه الكاميرا على الـ QR Code</p>
+    <p>وجّه الكاميرا على الـ QRR Code</p>
   </div>
-
   <div id="videoContainer">
     <video id="video" autoplay playsinline muted></video>
     <div class="scan-corner tl"></div>
@@ -94,15 +59,12 @@
     <div class="scan-corner br"></div>
     <div class="scan-line"></div>
   </div>
-
   <div id="status">جاري تشغيل الكاميرا...</div>
   <div class="footer">نظام التحقق من الدعوات</div>
-
   <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-dots"><span></span><span></span><span></span></div>
     <p>جاري التحقق...</p>
   </div>
-
   <div id="resultOverlay">
     <div id="resultBox">
       <div class="result-icon" id="resultIcon"></div>
@@ -113,7 +75,7 @@
   </div>
 
   <script>
-    const BASE_URL = 'https://script.google.com/macros/s/AKfycbxy7RVESX0JH7Bb8FwB5F9RpAoSq8GYZH-5-7sxMPxp2EpD9pDn3dCkOJpudk3cw9Gtqw/exec';
+    const BASE_URL = 'https://script.google.com/macros/s/AKfycbzGcliFT2nK4xFgeyfvbL2xpsUwzro1SgRt0Fel2CgW6V6JBkrPboDcwia50hvuuseX/exec';
     const KEY = 'SECURITY2026';
 
     const video = document.getElementById('video');
@@ -156,7 +118,7 @@
         const response = await fetch(url, { redirect: 'follow' });
         const txt = await response.text();
         loadingOverlay.style.display = 'none';
-        showResult(txt);
+        showResult(txt.trim());
       } catch(err) {
         loadingOverlay.style.display = 'none';
         statusEl.textContent = '❌ خطأ في الاتصال';
@@ -166,13 +128,13 @@
 
     function showResult(txt) {
       resultOverlay.style.display = 'flex';
-      if (txt.includes('success')) {
+      if (txt === 'success') {
         resultOverlay.className = 'overlay-success';
         resultBox.className = 'border-success';
         document.getElementById('resultIcon').textContent = '✅';
         document.getElementById('resultTitle').innerHTML = 'أهلاً وسهلاً<br>تم الدخول بنجاح';
         document.getElementById('resultTime').textContent = '';
-      } else if (txt.includes('used')) {
+      } else if (txt.startsWith('used')) {
         const time = txt.split('|')[1] || '';
         resultOverlay.className = 'overlay-error';
         resultBox.className = 'border-error';
