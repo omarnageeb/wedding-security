@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>بوابة الأمن - حفل الزفاف</title>
-  <script src="https://unpkg.com/vue-qrcode-reader@5.5.7/dist/vue-qrcode-reader.umd.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qr-scanner@1.4.2/qr-scanner.umd.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
@@ -21,28 +20,13 @@
     .header h1 { font-size: 28px; font-weight: 900; color: #c8a951; }
     .header p { color: #888; font-size: 15px; margin-top: 5px; }
     .divider { width: 80px; height: 2px; background: linear-gradient(90deg, transparent, #c8a951, transparent); margin: 10px auto; }
-
     #videoContainer {
-      position: relative;
-      width: 290px;
-      height: 290px;
-      margin: 15px auto;
-      border-radius: 20px;
-      overflow: hidden;
-      border: 2px solid #c8a951;
-      box-shadow: 0 0 30px rgba(200,169,81,0.2);
+      position: relative; width: 290px; height: 290px;
+      margin: 15px auto; border-radius: 20px; overflow: hidden;
+      border: 2px solid #c8a951; box-shadow: 0 0 30px rgba(200,169,81,0.2);
     }
-    video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-    .scan-corner {
-      position: absolute;
-      width: 30px; height: 30px;
-      border-color: #c8a951; border-style: solid;
-    }
+    video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .scan-corner { position: absolute; width: 30px; height: 30px; border-color: #c8a951; border-style: solid; }
     .tl { top:15px; left:15px; border-width:3px 0 0 3px; border-radius:5px 0 0 0; }
     .tr { top:15px; right:15px; border-width:3px 3px 0 0; border-radius:0 5px 0 0; }
     .bl { bottom:15px; left:15px; border-width:0 0 3px 3px; border-radius:0 0 0 5px; }
@@ -50,7 +34,7 @@
     .scan-line {
       position: absolute; left:15px; right:15px; height:2px;
       background: linear-gradient(90deg, transparent, #c8a951, transparent);
-      animation: scanMove 2s linear infinite; top:15px;
+      animation: scanMove 2s linear infinite;
     }
     @keyframes scanMove {
       0% { top:15px; opacity:1; }
@@ -58,32 +42,40 @@
       100% { top:calc(100% - 15px); opacity:0; }
     }
     #status { color:#888; font-size:13px; margin-top:8px; min-height:20px; }
-    #result {
-      display:none; margin:20px auto; max-width:290px;
-      padding:30px 20px; border-radius:20px;
-      animation: fadeIn 0.4s ease;
+    #resultOverlay {
+      display: none; position: fixed; inset: 0; z-index: 999;
+      flex-direction: column; align-items: center; justify-content: center;
+      padding: 30px; animation: fadeIn 0.3s ease;
     }
     @keyframes fadeIn { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:scale(1)} }
-    .result-success { background:linear-gradient(135deg,#0a2e0a,#0d3d0d); border:2px solid #00cc44; box-shadow:0 0 30px rgba(0,204,68,0.2); }
-    .result-error { background:linear-gradient(135deg,#2e0a0a,#3d0d0d); border:2px solid #cc0000; box-shadow:0 0 30px rgba(204,0,0,0.2); }
-    .result-icon { font-size:70px; line-height:1; margin-bottom:10px; }
-    .result-title { font-size:22px; font-weight:900; margin-bottom:8px; }
-    .result-success .result-title { color:#00ff55; }
-    .result-error .result-title { color:#ff4444; }
-    .result-time { font-size:13px; color:#aaa; margin-top:8px; }
+    .overlay-success { background: #061a06; }
+    .overlay-error { background: #1a0606; }
+    .result-icon { font-size: 100px; line-height: 1; margin-bottom: 20px; }
+    .result-title { font-size: 26px; font-weight: 900; margin-bottom: 10px; line-height: 1.4; }
+    .overlay-success .result-title { color: #00ff55; }
+    .overlay-error .result-title { color: #ff4444; }
+    .result-time { font-size: 14px; color: #aaa; margin-top: 10px; }
+    .border-success { border: 3px solid #00cc44; border-radius: 20px; padding: 40px 30px; width: 100%; max-width: 320px; background: rgba(0,204,68,0.05); }
+    .border-error { border: 3px solid #cc0000; border-radius: 20px; padding: 40px 30px; width: 100%; max-width: 320px; background: rgba(204,0,0,0.05); }
     .btn-scan {
-      display:none; background:linear-gradient(135deg,#c8a951,#a8891f);
-      color:#0d0d1a; border:none; padding:15px 40px; border-radius:50px;
-      font-size:18px; font-weight:900; font-family:'Tajawal',Arial,sans-serif;
-      cursor:pointer; margin-top:20px; box-shadow:0 5px 20px rgba(200,169,81,0.3);
+      background: linear-gradient(135deg,#c8a951,#a8891f);
+      color: #0d0d1a; border: none; padding: 15px 40px;
+      border-radius: 50px; font-size: 18px; font-weight: 900;
+      font-family: 'Tajawal', Arial, sans-serif;
+      cursor: pointer; margin-top: 25px;
+      box-shadow: 0 5px 20px rgba(200,169,81,0.3);
     }
-    .loading { display:none; margin:20px auto; }
+    .loading-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(13,13,26,0.95); z-index: 998;
+      flex-direction: column; align-items: center; justify-content: center;
+    }
     .loading-dots { display:flex; justify-content:center; gap:8px; }
-    .loading-dots span { width:10px; height:10px; background:#c8a951; border-radius:50%; animation:bounce 0.8s infinite; }
+    .loading-dots span { width:12px; height:12px; background:#c8a951; border-radius:50%; animation:bounce 0.8s infinite; }
     .loading-dots span:nth-child(2) { animation-delay:0.15s; }
     .loading-dots span:nth-child(3) { animation-delay:0.3s; }
-    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-    .loading p { color:#c8a951; margin-top:10px; font-size:16px; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+    .loading-overlay p { color:#c8a951; margin-top:15px; font-size:18px; font-weight:700; }
     .footer { margin-top:30px; color:#333; font-size:12px; }
   </style>
 </head>
@@ -104,56 +96,54 @@
   </div>
 
   <div id="status">جاري تشغيل الكاميرا...</div>
-  <div class="loading" id="loading">
+  <div class="footer">نظام التحقق من الدعوات</div>
+
+  <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-dots"><span></span><span></span><span></span></div>
     <p>جاري التحقق...</p>
   </div>
-  <div id="result"></div>
-  <button class="btn-scan" id="scanAgain" onclick="resetScanner()">📷 سكان دعوة تانية</button>
-  <div class="footer">نظام التحقق من الدعوات</div>
+
+  <div id="resultOverlay">
+    <div id="resultBox">
+      <div class="result-icon" id="resultIcon"></div>
+      <div class="result-title" id="resultTitle"></div>
+      <div class="result-time" id="resultTime"></div>
+    </div>
+    <button class="btn-scan" onclick="resetScanner()">📷 سكان دعوة تانية</button>
+  </div>
 
   <script>
-    const BASE_URL = 'https://script.google.com/macros/s/AKfycbwE78j84ecZ9uco5FOA4VlFaTU7cqITfBVXnpld4fzokG_PWVt7d9ZXi7y8_-dGXS70xQ/exec';
+    const BASE_URL = 'https://script.google.com/macros/s/AKfycbxy7RVESX0JH7Bb8FwB5F9RpAoSq8GYZH-5-7sxMPxp2EpD9pDn3dCkOJpudk3cw9Gtqw/exec';
     const KEY = 'SECURITY2026';
 
     const video = document.getElementById('video');
     const statusEl = document.getElementById('status');
-    const loadingEl = document.getElementById('loading');
-    const resultEl = document.getElementById('result');
-    const scanAgainBtn = document.getElementById('scanAgain');
-    const videoContainer = document.getElementById('videoContainer');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const resultOverlay = document.getElementById('resultOverlay');
+    const resultBox = document.getElementById('resultBox');
 
     let qrScanner;
+    let processing = false;
 
     async function startScanner() {
       try {
         qrScanner = new QrScanner(
           video,
           result => handleScan(result.data),
-          {
-            preferredCamera: 'environment',
-            highlightScanRegion: false,
-            highlightCodeOutline: false,
-            maxScansPerSecond: 5,
-          }
+          { preferredCamera: 'environment', highlightScanRegion: false, maxScansPerSecond: 5 }
         );
         await qrScanner.start();
         statusEl.textContent = '✅ الكاميرا شغالة - وجّه على الـ QR';
       } catch(err) {
-        statusEl.textContent = '❌ خطأ: ' + err.message;
+        statusEl.textContent = '❌ خطأ في الكاميرا: ' + err.message;
       }
     }
-
-    let processing = false;
 
     async function handleScan(text) {
       if (processing) return;
       processing = true;
-
-      qrScanner.stop();
-      videoContainer.style.display = 'none';
-      statusEl.textContent = '';
-      loadingEl.style.display = 'block';
+      await qrScanner.stop();
+      loadingOverlay.style.display = 'flex';
 
       let token = text;
       if (text.includes('?t=')) {
@@ -163,37 +153,44 @@
       const url = BASE_URL + '?t=' + encodeURIComponent(token) + '&key=' + KEY;
 
       try {
-        const response = await fetch(url);
-        const html = await response.text();
-        loadingEl.style.display = 'none';
-
-        if (html.includes('بنجاح')) {
-          resultEl.className = 'result-success';
-          resultEl.innerHTML = '<div class="result-icon">✅</div><div class="result-title">أهلاً وسهلاً<br>تم الدخول بنجاح</div>';
-        } else if (html.includes('مسبقاً')) {
-          const timeMatch = html.match(/وقت الاستخدام: ([^<]+)/);
-          const time = timeMatch ? timeMatch[1].trim() : '';
-          resultEl.className = 'result-error';
-          resultEl.innerHTML = '<div class="result-icon">❌</div><div class="result-title">هذه الدعوة<br>استُخدمت مسبقاً</div>' + (time ? '<div class="result-time">وقت الاستخدام: ' + time + '</div>' : '');
-        } else {
-          resultEl.className = 'result-error';
-          resultEl.innerHTML = '<div class="result-icon">❌</div><div class="result-title">دعوة غير صحيحة</div>';
-        }
-
-        resultEl.style.display = 'block';
-        scanAgainBtn.style.display = 'inline-block';
+        const response = await fetch(url, { redirect: 'follow' });
+        const txt = await response.text();
+        loadingOverlay.style.display = 'none';
+        showResult(txt);
       } catch(err) {
-        loadingEl.style.display = 'none';
-        statusEl.textContent = '❌ حصل خطأ في الاتصال';
+        loadingOverlay.style.display = 'none';
+        statusEl.textContent = '❌ خطأ في الاتصال';
         setTimeout(resetScanner, 2000);
+      }
+    }
+
+    function showResult(txt) {
+      resultOverlay.style.display = 'flex';
+      if (txt.includes('success')) {
+        resultOverlay.className = 'overlay-success';
+        resultBox.className = 'border-success';
+        document.getElementById('resultIcon').textContent = '✅';
+        document.getElementById('resultTitle').innerHTML = 'أهلاً وسهلاً<br>تم الدخول بنجاح';
+        document.getElementById('resultTime').textContent = '';
+      } else if (txt.includes('used')) {
+        const time = txt.split('|')[1] || '';
+        resultOverlay.className = 'overlay-error';
+        resultBox.className = 'border-error';
+        document.getElementById('resultIcon').textContent = '❌';
+        document.getElementById('resultTitle').innerHTML = 'هذه الدعوة<br>استُخدمت مسبقاً';
+        document.getElementById('resultTime').textContent = time ? 'وقت الاستخدام: ' + time : '';
+      } else {
+        resultOverlay.className = 'overlay-error';
+        resultBox.className = 'border-error';
+        document.getElementById('resultIcon').textContent = '❌';
+        document.getElementById('resultTitle').textContent = 'دعوة غير صحيحة';
+        document.getElementById('resultTime').textContent = '';
       }
     }
 
     async function resetScanner() {
       processing = false;
-      resultEl.style.display = 'none';
-      scanAgainBtn.style.display = 'none';
-      videoContainer.style.display = 'block';
+      resultOverlay.style.display = 'none';
       statusEl.textContent = 'جاري تشغيل الكاميرا...';
       await qrScanner.start();
       statusEl.textContent = '✅ الكاميرا شغالة - وجّه على الـ QR';
