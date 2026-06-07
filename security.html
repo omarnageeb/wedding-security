@@ -133,7 +133,7 @@
           { preferredCamera: 'environment', highlightScanRegion: false, maxScansPerSecond: 5 }
         );
         await qrScanner.start();
-        statusEl.textContent = '✅ الكاميرا شغالةm - وجّه على الـ QR';
+        statusEl.textContent = '✅ الكاميرا شغالة - وجّه على الـ QR';
       } catch(err) {
         statusEl.textContent = '❌ خطأ في الكاميرا: ' + err.message;
       }
@@ -193,7 +193,7 @@
       resultOverlay.style.display = 'none';
       statusEl.textContent = 'جاري تشغيل الكاميرا...';
       await qrScanner.start();
-      statusEl.textContent = '✅ الكاميرا شغالةm - وجّه على الـ QR';
+      statusEl.textContent = '✅ الكاميرا شغالة - وجّه على الـ QR';
     }
 
     startScanner();
