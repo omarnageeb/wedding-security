@@ -4,12 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>بوابة الأمن - حفل الزفاف</title>
-  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  <script src="https://unpkg.com/vue-qrcode-reader@5.5.7/dist/vue-qrcode-reader.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qr-scanner@1.4.2/qr-scanner.umd.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     body {
       font-family: 'Tajawal', Arial, sans-serif;
       text-align: center;
@@ -17,32 +16,11 @@
       color: white;
       min-height: 100vh;
       padding: 20px;
-      overflow-x: hidden;
     }
-
-    .header {
-      padding: 20px 0 10px;
-    }
-
-    .header h1 {
-      font-size: 28px;
-      font-weight: 900;
-      color: #c8a951;
-      letter-spacing: 1px;
-    }
-
-    .header p {
-      color: #888;
-      font-size: 15px;
-      margin-top: 5px;
-    }
-
-    .divider {
-      width: 80px;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, #c8a951, transparent);
-      margin: 10px auto;
-    }
+    .header { padding: 20px 0 10px; }
+    .header h1 { font-size: 28px; font-weight: 900; color: #c8a951; }
+    .header p { color: #888; font-size: 15px; margin-top: 5px; }
+    .divider { width: 80px; height: 2px; background: linear-gradient(90deg, transparent, #c8a951, transparent); margin: 10px auto; }
 
     #videoContainer {
       position: relative;
@@ -52,167 +30,64 @@
       border-radius: 20px;
       overflow: hidden;
       border: 2px solid #c8a951;
-      box-shadow: 0 0 30px rgba(200, 169, 81, 0.2);
+      box-shadow: 0 0 30px rgba(200,169,81,0.2);
     }
-
     video {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
-
-    canvas { display: none; }
-
-    .scan-overlay {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-
     .scan-corner {
       position: absolute;
-      width: 30px;
-      height: 30px;
-      border-color: #c8a951;
-      border-style: solid;
+      width: 30px; height: 30px;
+      border-color: #c8a951; border-style: solid;
     }
-    .scan-corner.tl { top: 15px; left: 15px; border-width: 3px 0 0 3px; border-radius: 5px 0 0 0; }
-    .scan-corner.tr { top: 15px; right: 15px; border-width: 3px 3px 0 0; border-radius: 0 5px 0 0; }
-    .scan-corner.bl { bottom: 15px; left: 15px; border-width: 0 0 3px 3px; border-radius: 0 0 0 5px; }
-    .scan-corner.br { bottom: 15px; right: 15px; border-width: 0 3px 3px 0; border-radius: 0 0 5px 0; }
-
+    .tl { top:15px; left:15px; border-width:3px 0 0 3px; border-radius:5px 0 0 0; }
+    .tr { top:15px; right:15px; border-width:3px 3px 0 0; border-radius:0 5px 0 0; }
+    .bl { bottom:15px; left:15px; border-width:0 0 3px 3px; border-radius:0 0 0 5px; }
+    .br { bottom:15px; right:15px; border-width:0 3px 3px 0; border-radius:0 0 5px 0; }
     .scan-line {
-      position: absolute;
-      left: 15px;
-      right: 15px;
-      height: 2px;
+      position: absolute; left:15px; right:15px; height:2px;
       background: linear-gradient(90deg, transparent, #c8a951, transparent);
-      animation: scanMove 2s linear infinite;
-      top: 15px;
+      animation: scanMove 2s linear infinite; top:15px;
     }
-
     @keyframes scanMove {
-      0% { top: 15px; opacity: 1; }
-      90% { top: calc(100% - 15px); opacity: 1; }
-      100% { top: calc(100% - 15px); opacity: 0; }
+      0% { top:15px; opacity:1; }
+      90% { top:calc(100% - 15px); opacity:1; }
+      100% { top:calc(100% - 15px); opacity:0; }
     }
-
-    #status {
-      color: #888;
-      font-size: 13px;
-      margin-top: 8px;
-      min-height: 20px;
-    }
-
-    /* Result */
+    #status { color:#888; font-size:13px; margin-top:8px; min-height:20px; }
     #result {
-      display: none;
-      margin: 20px auto;
-      max-width: 290px;
-      padding: 30px 20px;
-      border-radius: 20px;
+      display:none; margin:20px auto; max-width:290px;
+      padding:30px 20px; border-radius:20px;
       animation: fadeIn 0.4s ease;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    .result-success {
-      background: linear-gradient(135deg, #0a2e0a, #0d3d0d);
-      border: 2px solid #00cc44;
-      box-shadow: 0 0 30px rgba(0, 204, 68, 0.2);
-    }
-
-    .result-error {
-      background: linear-gradient(135deg, #2e0a0a, #3d0d0d);
-      border: 2px solid #cc0000;
-      box-shadow: 0 0 30px rgba(204, 0, 0, 0.2);
-    }
-
-    .result-icon {
-      font-size: 70px;
-      line-height: 1;
-      margin-bottom: 10px;
-    }
-
-    .result-title {
-      font-size: 22px;
-      font-weight: 900;
-      margin-bottom: 8px;
-    }
-
-    .result-success .result-title { color: #00ff55; }
-    .result-error .result-title { color: #ff4444; }
-
-    .result-time {
-      font-size: 13px;
-      color: #aaa;
-      margin-top: 8px;
-    }
-
+    @keyframes fadeIn { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:scale(1)} }
+    .result-success { background:linear-gradient(135deg,#0a2e0a,#0d3d0d); border:2px solid #00cc44; box-shadow:0 0 30px rgba(0,204,68,0.2); }
+    .result-error { background:linear-gradient(135deg,#2e0a0a,#3d0d0d); border:2px solid #cc0000; box-shadow:0 0 30px rgba(204,0,0,0.2); }
+    .result-icon { font-size:70px; line-height:1; margin-bottom:10px; }
+    .result-title { font-size:22px; font-weight:900; margin-bottom:8px; }
+    .result-success .result-title { color:#00ff55; }
+    .result-error .result-title { color:#ff4444; }
+    .result-time { font-size:13px; color:#aaa; margin-top:8px; }
     .btn-scan {
-      display: none;
-      background: linear-gradient(135deg, #c8a951, #a8891f);
-      color: #0d0d1a;
-      border: none;
-      padding: 15px 40px;
-      border-radius: 50px;
-      font-size: 18px;
-      font-weight: 900;
-      font-family: 'Tajawal', Arial, sans-serif;
-      cursor: pointer;
-      margin-top: 20px;
-      box-shadow: 0 5px 20px rgba(200, 169, 81, 0.3);
-      transition: transform 0.1s;
+      display:none; background:linear-gradient(135deg,#c8a951,#a8891f);
+      color:#0d0d1a; border:none; padding:15px 40px; border-radius:50px;
+      font-size:18px; font-weight:900; font-family:'Tajawal',Arial,sans-serif;
+      cursor:pointer; margin-top:20px; box-shadow:0 5px 20px rgba(200,169,81,0.3);
     }
-
-    .btn-scan:active { transform: scale(0.97); }
-
-    .loading {
-      display: none;
-      margin: 20px auto;
-    }
-
-    .loading-dots {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .loading-dots span {
-      width: 10px;
-      height: 10px;
-      background: #c8a951;
-      border-radius: 50%;
-      animation: bounce 0.8s infinite;
-    }
-
-    .loading-dots span:nth-child(2) { animation-delay: 0.15s; }
-    .loading-dots span:nth-child(3) { animation-delay: 0.3s; }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-
-    .loading p {
-      color: #c8a951;
-      margin-top: 10px;
-      font-size: 16px;
-    }
-
-    .footer {
-      margin-top: 30px;
-      color: #333;
-      font-size: 12px;
-    }
+    .loading { display:none; margin:20px auto; }
+    .loading-dots { display:flex; justify-content:center; gap:8px; }
+    .loading-dots span { width:10px; height:10px; background:#c8a951; border-radius:50%; animation:bounce 0.8s infinite; }
+    .loading-dots span:nth-child(2) { animation-delay:0.15s; }
+    .loading-dots span:nth-child(3) { animation-delay:0.3s; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    .loading p { color:#c8a951; margin-top:10px; font-size:16px; }
+    .footer { margin-top:30px; color:#333; font-size:12px; }
   </style>
 </head>
 <body>
-
   <div class="header">
     <h1>🔐 بوابة الأمن</h1>
     <div class="divider"></div>
@@ -221,31 +96,20 @@
 
   <div id="videoContainer">
     <video id="video" autoplay playsinline muted></video>
-    <canvas id="canvas"></canvas>
-    <div class="scan-overlay">
-      <div class="scan-corner tl"></div>
-      <div class="scan-corner tr"></div>
-      <div class="scan-corner bl"></div>
-      <div class="scan-corner br"></div>
-      <div class="scan-line"></div>
-    </div>
+    <div class="scan-corner tl"></div>
+    <div class="scan-corner tr"></div>
+    <div class="scan-corner bl"></div>
+    <div class="scan-corner br"></div>
+    <div class="scan-line"></div>
   </div>
 
   <div id="status">جاري تشغيل الكاميرا...</div>
-
   <div class="loading" id="loading">
-    <div class="loading-dots">
-      <span></span><span></span><span></span>
-    </div>
+    <div class="loading-dots"><span></span><span></span><span></span></div>
     <p>جاري التحقق...</p>
   </div>
-
   <div id="result"></div>
-
-  <button class="btn-scan" id="scanAgain" onclick="resetScanner()">
-    📷 سكان دعوة تانية
-  </button>
-
+  <button class="btn-scan" id="scanAgain" onclick="resetScanner()">📷 سكان دعوة تانية</button>
   <div class="footer">نظام التحقق من الدعوات</div>
 
   <script>
@@ -253,61 +117,40 @@
     const KEY = 'SECURITY2026';
 
     const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
     const statusEl = document.getElementById('status');
     const loadingEl = document.getElementById('loading');
     const resultEl = document.getElementById('result');
     const scanAgainBtn = document.getElementById('scanAgain');
     const videoContainer = document.getElementById('videoContainer');
 
-    let scanning = false;
-    let animFrame;
-    let stream;
+    let qrScanner;
 
-    async function startCamera() {
+    async function startScanner() {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: { ideal: 'environment' },
-            width: { ideal: 1280 },
-            height: { ideal: 720 }
+        qrScanner = new QrScanner(
+          video,
+          result => handleScan(result.data),
+          {
+            preferredCamera: 'environment',
+            highlightScanRegion: false,
+            highlightCodeOutline: false,
+            maxScansPerSecond: 5,
           }
-        });
-        video.srcObject = stream;
-        await video.play();
-        video.onloadedmetadata = () => {
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-          statusEl.textContent = '✅ الكاميرا شغالة - وجّه على الـ QR';
-          scanning = true;
-          scanLoop();
-        };
-      } catch (err) {
-        statusEl.textContent = '❌ تعذّر فتح الكاميرا: ' + err.message;
+        );
+        await qrScanner.start();
+        statusEl.textContent = '✅ الكاميرا شغالة - وجّه على الـ QR';
+      } catch(err) {
+        statusEl.textContent = '❌ خطأ: ' + err.message;
       }
     }
 
-    function scanLoop() {
-      if (!scanning) return;
-      if (video.readyState === video.HAVE_ENOUGH_DATA) {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const code = jsQR(imageData.data, imageData.width, imageData.height, {
-          inversionAttempts: 'dontInvert'
-        });
-        if (code) {
-          scanning = false;
-          processQR(code.data);
-          return;
-        }
-      }
-      animFrame = requestAnimationFrame(scanLoop);
-    }
+    let processing = false;
 
-    async function processQR(text) {
-      // أوقف الكاميرا
-      if (stream) stream.getTracks().forEach(t => t.stop());
+    async function handleScan(text) {
+      if (processing) return;
+      processing = true;
+
+      qrScanner.stop();
       videoContainer.style.display = 'none';
       statusEl.textContent = '';
       loadingEl.style.display = 'block';
@@ -326,31 +169,20 @@
 
         if (html.includes('بنجاح')) {
           resultEl.className = 'result-success';
-          resultEl.innerHTML = `
-            <div class="result-icon">✅</div>
-            <div class="result-title">أهلاً وسهلاً<br>تم الدخول بنجاح</div>
-          `;
+          resultEl.innerHTML = '<div class="result-icon">✅</div><div class="result-title">أهلاً وسهلاً<br>تم الدخول بنجاح</div>';
         } else if (html.includes('مسبقاً')) {
           const timeMatch = html.match(/وقت الاستخدام: ([^<]+)/);
           const time = timeMatch ? timeMatch[1].trim() : '';
           resultEl.className = 'result-error';
-          resultEl.innerHTML = `
-            <div class="result-icon">❌</div>
-            <div class="result-title">هذه الدعوة<br>استُخدمت مسبقاً</div>
-            ${time ? `<div class="result-time">وقت الاستخدام: ${time}</div>` : ''}
-          `;
+          resultEl.innerHTML = '<div class="result-icon">❌</div><div class="result-title">هذه الدعوة<br>استُخدمت مسبقاً</div>' + (time ? '<div class="result-time">وقت الاستخدام: ' + time + '</div>' : '');
         } else {
           resultEl.className = 'result-error';
-          resultEl.innerHTML = `
-            <div class="result-icon">❌</div>
-            <div class="result-title">دعوة غير صحيحة</div>
-          `;
+          resultEl.innerHTML = '<div class="result-icon">❌</div><div class="result-title">دعوة غير صحيحة</div>';
         }
 
         resultEl.style.display = 'block';
         scanAgainBtn.style.display = 'inline-block';
-
-      } catch (err) {
+      } catch(err) {
         loadingEl.style.display = 'none';
         statusEl.textContent = '❌ حصل خطأ في الاتصال';
         setTimeout(resetScanner, 2000);
@@ -358,16 +190,16 @@
     }
 
     async function resetScanner() {
+      processing = false;
       resultEl.style.display = 'none';
       scanAgainBtn.style.display = 'none';
       videoContainer.style.display = 'block';
       statusEl.textContent = 'جاري تشغيل الكاميرا...';
-      scanning = false;
-      cancelAnimationFrame(animFrame);
-      await startCamera();
+      await qrScanner.start();
+      statusEl.textContent = '✅ الكاميرا شغالة - وجّه على الـ QR';
     }
 
-    startCamera();
+    startScanner();
   </script>
 </body>
 </html>
